@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app_2/constant/colors.dart';
 import 'package:todo_app_2/constant/fonts.dart';
 import 'package:todo_app_2/constant/images.dart';
+import 'package:todo_app_2/provider/task_provider.dart';
 import 'package:todo_app_2/widget/addtask_button.dart';
-import 'package:todo_app_2/widget/catagory_icon.dart';
+import 'package:todo_app_2/widget/catagory_section.dart';
 import 'package:todo_app_2/widget/custom_textfeild.dart';
 import 'package:todo_app_2/widget/date_time_textfeild.dart';
 
@@ -15,10 +18,14 @@ class AddtaskPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final sh = MediaQuery.sizeOf(context).height;
     final sw = MediaQuery.sizeOf(context).width;
+    String formatTimeOfDay(BuildContext context, TimeOfDay time) {
+      final now = DateTime.now();
+      final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+      final format = DateFormat.jm(); // e.g. 6:00 PM
+      return format.format(dt);
+    }
 
-    // Sample icon list
-    final List<ImageProvider> icon = [cupIcon, listIcon, claenderIcon];
-
+    final taskProvider = Provider.of<TaskProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: bgcolor,
       body: Stack(
@@ -51,16 +58,44 @@ class AddtaskPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 50),
                   Text("Enter Task Title", style: h2text),
-                  const CustomTextfeild(hintText: "Enter Task Title"),
+                  CustomTextfeild(
+                    hintText: "Enter Task Title",
+                    onChanged: (value) {
+                      taskProvider.setTasktitle(value);
+                    },
+                  ),
                   const SizedBox(height: 30),
                   Row(
                     children: [
                       Text("Category", style: h2text),
                       SizedBox(width: 20),
-                      SizedBox(height: 70),
-                      ...List.generate(
-                        icon.length,
-                        (index) => CatagoryIcon(image: icon[index]),
+                      SizedBox(
+                        height: 70,
+                        child: Row(
+                          children: [
+                            CatagorySection(
+                              imagePath: cup,
+                              onTap: (value) {
+                                taskProvider.setcatagory(value);
+                              },
+                              selectedImage: taskProvider.taskCatagory,
+                            ),
+                            CatagorySection(
+                              imagePath: date,
+                              onTap: (value) {
+                                taskProvider.setcatagory(value);
+                              },
+                              selectedImage: taskProvider.taskCatagory,
+                            ),
+                            CatagorySection(
+                              imagePath: list,
+                              onTap: (value) {
+                                taskProvider.setcatagory(value);
+                              },
+                              selectedImage: taskProvider.taskCatagory,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -78,6 +113,22 @@ class AddtaskPage extends StatelessWidget {
                             children: [
                               Text("Date", style: h2text),
                               DateTimeTextfeild(
+                                hintText: taskProvider.taskDate != null
+                                    ? DateFormat(
+                                        "yyyy-MM-dd",
+                                      ).format(taskProvider.taskDate!)
+                                    : "Select Date",
+                                onTap: () async {
+                                  final pickDate = await showDatePicker(
+                                    context: (context),
+                                    firstDate: DateTime(2025),
+                                    lastDate: DateTime(2050),
+                                    initialDate: DateTime.now(),
+                                  );
+                                  if (pickDate != null) {
+                                    return taskProvider.setDate(pickDate);
+                                  }
+                                },
                                 suffixIcon: Icon(
                                   FontAwesomeIcons.calendar,
                                   size: 20,
@@ -97,6 +148,21 @@ class AddtaskPage extends StatelessWidget {
                             children: [
                               Text("Time", style: h2text),
                               DateTimeTextfeild(
+                                hintText: taskProvider.taskTime != null
+                                    ? formatTimeOfDay(
+                                        context,
+                                        taskProvider.taskTime!,
+                                      )
+                                    : "Select Time",
+                                onTap: () async {
+                                  final pickTime = await showTimePicker(
+                                    context: (context),
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (pickTime != null) {
+                                    return taskProvider.setTime(pickTime);
+                                  }
+                                },
                                 suffixIcon: Icon(
                                   FontAwesomeIcons.clock,
                                   size: 20,
@@ -139,7 +205,13 @@ class AddtaskPage extends StatelessWidget {
                   ),
                   SizedBox(height: 100),
 
-                  AddtaskButton(onTap: () {}, text: "Saved"),
+                  AddtaskButton(
+                    onTap: () {
+                      taskProvider.addTask();
+                      Navigator.pop(context);
+                    },
+                    text: "Saved",
+                  ),
                 ],
               ),
             ),

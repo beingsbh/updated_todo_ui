@@ -10,6 +10,7 @@ class ComplitedTaskSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final sh = MediaQuery.sizeOf(context).height;
     final sw = MediaQuery.sizeOf(context).width;
+
     return Container(
       height: sh * 0.27,
       width: sw * 0.96,
@@ -17,16 +18,21 @@ class ComplitedTaskSection extends StatelessWidget {
         color: white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: ListView.separated(
+      /*ListView.separated(
         padding: EdgeInsets.only(top: 0),
         itemBuilder: (context, index) {
-          return CustomListtile(image: claenderIcon);
+          return CustomListtile(
+            image: cupIcon,
+            date: DateTime.now().toString(),
+            time: DateTime.now().toString(),
+            title: "hello",
+          );
         },
         separatorBuilder: (context, index) {
           return Divider();
         },
         itemCount: 2,
-      ),
+      ),*/
     );
   }
 }
