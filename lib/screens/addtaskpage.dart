@@ -207,6 +207,25 @@ class AddtaskPage extends StatelessWidget {
 
                   AddtaskButton(
                     onTap: () {
+                      if (taskProvider.taskTitle == null ||
+                          taskProvider.taskDate == null ||
+                          taskProvider.taskTime == null ||
+                          taskProvider.taskCatagory == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Please fill all fields before saving.",
+                            ),
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              225,
+                              112,
+                              0,
+                            ),
+                          ),
+                        );
+                        return;
+                      }
                       taskProvider.addTask();
                       Navigator.pop(context);
                     },

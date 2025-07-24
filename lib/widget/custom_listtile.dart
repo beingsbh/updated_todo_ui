@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:todo_app_2/constant/fonts.dart';
 
 class CustomListtile extends StatelessWidget {
@@ -8,11 +9,16 @@ class CustomListtile extends StatelessWidget {
     required this.date,
     required this.time,
     required this.title,
+    required this.isComplete,
+    required this.onChanged,
   });
   final ImageProvider image;
   final String title;
   final String date;
   final String time;
+  final bool isComplete;
+  final VoidCallback onChanged;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -23,7 +29,14 @@ class CustomListtile extends StatelessWidget {
           image: DecorationImage(image: image, fit: BoxFit.cover),
         ),
       ),
-      title: Text(title, style: h2text),
+      title: Text(
+        title,
+        style: h2text.copyWith(
+          decoration: isComplete
+              ? TextDecoration.lineThrough
+              : TextDecoration.none,
+        ),
+      ),
       subtitle: SizedBox(
         height: 20,
         width: double.infinity,
@@ -35,7 +48,7 @@ class CustomListtile extends StatelessWidget {
           ],
         ),
       ),
-      trailing: Checkbox(value: false, onChanged: (value) {}),
+      trailing: Checkbox(value: isComplete, onChanged: (_) => onChanged()),
     );
   }
 }

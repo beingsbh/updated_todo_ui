@@ -6,15 +6,23 @@ import 'package:todo_app_2/model/viewmodel.dart';
 class TaskProvider extends ChangeNotifier {
   final List<Tasks> _tasks = [];
   List get tasks => _tasks;
-  String _taskTitle = "";
-  String _taskCatagory = "";
+  String? _taskTitle;
+  String? _taskCatagory;
   DateTime? _taskDate;
   TimeOfDay? _taskTime;
+  bool? _isComplete;
 
-  String get taskTitle => _taskTitle;
-  String get taskCatagory => _taskCatagory;
+  String? get taskTitle => _taskTitle;
+  String? get taskCatagory => _taskCatagory;
   DateTime? get taskDate => _taskDate;
   TimeOfDay? get taskTime => _taskTime;
+  bool? get isComplete => _isComplete;
+
+  List<Tasks> get activeTasks =>
+      _tasks.where((task) => task.isComplete == false).toList();
+
+  List<Tasks> get completeTasks =>
+      _tasks.where((task) => task.isComplete == true).toList();
 
   setTasktitle(String value) {
     _taskTitle = value;
@@ -41,13 +49,6 @@ class TaskProvider extends ChangeNotifier {
   }
 
   addTask() {
-    if (_taskTitle.trim().isEmpty &&
-        _taskCatagory.trim().isEmpty &&
-        _taskDate.toString().isEmpty &&
-        _taskTime.toString().isEmpty) {
-      return;
-    }
-
     final newTask = Tasks(
       title: _taskTitle,
       category: _taskCatagory,
@@ -63,7 +64,38 @@ class TaskProvider extends ChangeNotifier {
   void reset() {
     _taskCatagory = "";
     _taskTitle = "";
-    _taskDate = DateTime.now();
+    _taskDate = null;
     _taskTime = null;
+    _isComplete = false;
+  }
+
+  void toggleTaskStatus(Tasks task) {
+    final index = _tasks.indexWhere(
+      (t) =>
+          t.title == task.title &&
+          t.category == task.category &&
+          t.date == task.date &&
+          t.time == task.time,
+    );
+
+    if (index != -1) {
+      _tasks[index].isComplete = !_tasks[index].isComplete;
+      log(
+        "✅ Task toggled: ${_tasks[index].title} → ${_tasks[index].isComplete}",
+      );
+      notifyListeners();
+    } else {
+      debugPrint("❌ Task not found!");
+    }
+  }
+
+  void deleteTask(int index) {
+    _tasks.removeAt(index);
+    notifyListeners();
+  }
+
+  void clearAllTask(index) {
+    _tasks.remove(index);
+    notifyListeners();
   }
 }

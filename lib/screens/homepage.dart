@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todo_app_2/constant/colors.dart';
 import 'package:todo_app_2/constant/fonts.dart';
 import 'package:todo_app_2/constant/images.dart';
@@ -13,6 +14,7 @@ class Homepage extends StatelessWidget {
   Widget build(BuildContext context) {
     final sh = MediaQuery.sizeOf(context).height;
     final sw = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
       backgroundColor: bgcolor,
 
@@ -31,7 +33,10 @@ class Homepage extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: sh * 0.06),
-                Text("September 28,2003", style: h2),
+                Text(
+                  DateFormat("dd-MM-yyyy").format(DateTime.now()),
+                  style: h2,
+                ),
                 SizedBox(height: sw * 0.09),
                 Text("My To Do List", style: h1),
                 TasklistSection(),
